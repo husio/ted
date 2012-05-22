@@ -1,12 +1,12 @@
 CFLAGS= -g
 
 
-vm: *.c
+parser:
+	lex parser.l
+	yacc -d grammar.y
 
-# vm:
-# 	lex parser.l
-# 	yacc -d grammar.y
-# 	${CC} lex.yy.c y.tab.c -o vm
+vm: *.c
+	${CC} ${CFLAGS} -o $@ $^
 
 all: vm
 
@@ -15,3 +15,6 @@ clean:
 	rm y.tab.* 2> /dev/null
 	rm parser.c 2> /dev/null
 	rm vm 2> /dev/null
+
+
+.PHONY: parser vm clean all

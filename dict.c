@@ -15,7 +15,7 @@ ted_Dict_new()
     return (ted_Obj *)o;
 }
 
-void
+ted_Obj *
 ted_Dict_setitem(ted_Obj *o, ted_Obj *key, ted_Obj *value)
 {
     int i;
@@ -42,6 +42,28 @@ ted_Dict_setitem(ted_Obj *o, ted_Obj *key, ted_Obj *value)
 
     dt->d_items[dt->d_len] = item;
     dt->d_len += 1;
+
+    return ted_None;
+}
+
+ted_Obj *
+ted_Dict_getitem(ted_Obj *o, ted_Obj *key)
+{
+    int i;
+    char *raw_key;
+    ted_Dict_Item *item;
+    ted_Dict *dt;
+
+    ted_assert_is_type(&ted_type_Dict, o);
+    raw_key = ted_Str_to_charptr(key);
+    dt = (ted_Dict *)o;
+    for (i=0; i<dt->d_len; ++i) {
+        item = dt->d_items[i];
+        if (strcmp(raw_key, ted_Str_to_charptr(item->key)) == 0) {
+            return item->value;
+        }
+    }
+    return NULL;
 }
 
 

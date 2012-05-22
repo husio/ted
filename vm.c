@@ -1,60 +1,77 @@
 #include "ted.h"
 
 
+extern ted_method_def ted_builtin_functions[];
 
-int main(int argc, const char *argv[])
+
+ted_VM *
+ted_VM_new()
 {
-    ted_Obj *o, *lst, *args;
-    ted_Obj *key, *value, *dt;
-    ted_function lst_append;
-    ted_function lst_mul;
+    ted_method_def *meth_def;
+    ted_VM *vm;
 
-    lst = ted_List_new();
-    ted_List_append(lst, ted_Int_new(23));
-    ted_print(lst);
+    vm = malloc(sizeof(ted_VM));
+    vm->closures = ted_List_new();
+    vm->builtins = ted_Dict_new();
 
+    ted_List_append(vm->closures, ted_Dict_new());
 
-    /* test append method */
-    lst_append = ted_find_method(lst, "append");
-    if (!lst_append) {
-        ted_panic("List type does not provide \"append\" method");
+    meth_def = ted_builtin_functions;
+    while (meth_def->name != NULL) {
+        ted_Dict_setitem(vm->builtins,
+                ted_Str_new(meth_def->name),
+                ted_Func_new(meth_def->function));
+        ++meth_def;
     }
-    args = ted_List_new();
-    ted_List_append(args, ted_Str_new("fist string"));
-    ted_List_append(args, ted_Str_new("second"));
-    lst_append(lst, args);
-    ted_print(lst);
-    ted_print(ted_None);
-    ted_print(ted_True);
-    ted_print(ted_False);
 
+    return vm;
+}
 
-    dt = ted_Dict_new();
+ted_Obj *
+ted_VM_push_closure(ted_VM *vm)
+{
+    ted_Obj *closure;
 
-    ted_print(dt);
-    ted_print(ted_type(dt));
+    closure = ted_Dict_new();
+    ted_List_append(vm->closures, closure);
+    return closure;
+}
 
-    key = ted_Str_new("a");
-    value = ted_Str_new("b");
-    ted_Dict_setitem(dt, key, value);
+ted_Obj *
+ted_VM_pop_closure(ted_VM *vm)
+{
+    if (ted_List_len(vm->closures) == 0) {
+        ted_panic("Cannot pop from empty closures list");
+    }
+    return ted_List_pop(vm->closures);
+}
 
-    key = ted_Str_new("one");
-    value = ted_Int_new(33);
-    ted_Dict_setitem(dt, key, value);
+ted_Obj *
+ted_VM_setvar(ted_VM *vm, ted_Obj *name, ted_Obj *value)
+{
+    ted_Obj *closure;
 
-    value = ted_Int_new(1);
-    ted_Dict_setitem(dt, key, value);
+    closure = ted_List_at_index(vm->closures, ted_List_len(vm->closures) - 1);
+    ted_Dict_setitem(closure, name, value);
 
-    key = value;
-    ted_Dict_setitem(dt, key, value);
-    value = ted_Int_new(99);
-    ted_Dict_setitem(dt, key, value);
-    key = ted_Int_new(0);
-    ted_Dict_setitem(dt, key, value);
+    return ted_None;
+}
 
-    ted_print(dt);
+ted_Obj *
+ted_VM_getvar(ted_VM *vm, ted_Obj *name)
+{
+    int i;
+    ted_Obj *closure, *o;
 
+    ted_assert_is_type(&ted_type_Str, name);
 
+    for (i=ted_List_len(vm->closures) - 1; i>=0; --i) {
+        closure = ted_List_at_index(vm->closures, i);
+        o = ted_Dict_getitem(closure, name);
+        if (o != NULL) {
+            return o;
+        }
+    }
 
-    return 0;
+    return NULL;
 }

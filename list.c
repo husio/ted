@@ -38,6 +38,12 @@ ted_List_at_index(ted_Obj *o, int index)
 }
 
 ted_Obj *
+ted_List_pop(ted_Obj *o)
+{
+    return ted_None;
+}
+
+ted_Obj *
 meth_append(ted_Obj *self, ted_Obj *args)
 {
     int i;

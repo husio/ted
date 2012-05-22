@@ -3,6 +3,8 @@
 
 ted_Obj *ted_List_new();
 ted_Obj *ted_List_at_index(ted_Obj *, int);
+ted_Obj *ted_List_pop(ted_Obj *);
+
 
 #define ted_List_len(o) \
     (((ted_List *)o)->l_len)

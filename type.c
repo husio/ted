@@ -18,9 +18,8 @@ meth__str__(ted_Obj *self, ted_Obj *args)
     char s[1024];
 
     ted_assert_is_type(&ted_type_Type, self);
-    tp = (ted_Type *)self;
 
-    sprintf(s, "<type \"%s\">", tp->tp_name);
+    sprintf(s, "<type \"%s\">", o->ob_type->tp_name);
     o = ted_Str_new(s);
     return o;
 }
@@ -50,6 +49,7 @@ meth__cmp__(ted_Obj *self, ted_Obj *args)
     }
 meth_not_supported(__mul__, "__mul__");
 meth_not_supported(__add__, "__add__");
+meth_not_supported(__call__, "__call__");
 
 static ted_method_def methods[] = {
     {"__mul__", &meth_not_supported__mul__},
@@ -57,6 +57,7 @@ static ted_method_def methods[] = {
     {"__del__", &meth__del__},
     {"__str__", &meth__str__},
     {"__cmp__", &meth__cmp__},
+    {"__call__", &meth__cmp__},
     {NULL, NULL},
 };
 

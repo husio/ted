@@ -1,5 +1,0 @@
-#include "ted.h"
-
-
-
-

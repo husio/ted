@@ -36,6 +36,7 @@ extern ted_Type ted_type_Int;
 extern ted_Type ted_type_Str;
 extern ted_Type ted_type_List;
 extern ted_Type ted_type_Dict;
+extern ted_Type ted_type_Func;
 
 typedef struct _ted_List {
     TED_OBJECT_HEAD
@@ -72,6 +73,17 @@ typedef struct _ted_Bool {
     int b_val;
 } ted_Bool;
 
+typedef struct _ted_Func {
+    TED_OBJECT_HEAD
+    ted_Obj *bound_obj;
+    ted_function function;
+} ted_Func;
+
+typedef struct _ted_VM {
+    ted_Obj *closures;
+    ted_Obj *builtins;
+} ted_VM;
+
 
 void ted_assert_is_type(ted_Type *, ted_Obj *);
 void ted_panic(const char *, ...);
@@ -83,6 +95,8 @@ void ted_panic(const char *, ...);
 #include "int.h"
 #include "list.h"
 #include "builtins.h"
+#include "function.h"
+#include "vm.h"
 
 #include "helpers.h"
 
