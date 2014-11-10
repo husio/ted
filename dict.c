@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "ted.h"
 
 #define TED_DICT_INIT_SIZE 100
@@ -32,7 +34,7 @@ ted_Dict_setitem(ted_Obj *o, ted_Obj *key, ted_Obj *value)
         item = dt->d_items[i];
         if (ted_Bool_to_int(tedh_equal(item->key, key))) {
             item->value = value;
-            return;
+            return NULL;
         }
     }
 
